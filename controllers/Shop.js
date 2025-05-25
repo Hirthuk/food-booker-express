@@ -44,5 +44,22 @@ const getShopoverview = async (req,res) => {
    }
 }
 
+const getShopItems = async (req,res) => {
+    try{
+        let result = await sql`select * from shopitems`
+        res.status(200).json({
+            success: true,
+            result
+        })
+    }
 
-export { createCloudinaryURL, getShopoverview };
+    catch(error){
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+
+export { createCloudinaryURL, getShopoverview, getShopItems };

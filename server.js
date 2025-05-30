@@ -5,6 +5,7 @@ import { connectDb } from './config/connectDb.js';
 import ShopRoutes from './routes/ShopRouter.js';
 import cors from 'cors';
 import UserRoute from './routes/UserRouter.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -17,10 +18,13 @@ connectDb();
 
 // 3. Middleware setup (ORDER MATTERS!)
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
+// To parse cookies
+app.use(cookieParser())
 // These must come BEFORE route definitions
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies

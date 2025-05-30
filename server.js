@@ -6,6 +6,7 @@ import ShopRoutes from './routes/ShopRouter.js';
 import cors from 'cors';
 import UserRoute from './routes/UserRouter.js';
 import cookieParser from 'cookie-parser';
+import favouritesRouter from './routes/Favourites.js'
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -35,6 +36,7 @@ connectCloudinary();
 // 5. Routes (after all middleware)
 app.use('/api/shops', ShopRoutes);
 app.use('/api/users', UserRoute);
+app.use('/api/favorites', favouritesRouter)
 
 app.get('/', (req, res) => {
     res.json({

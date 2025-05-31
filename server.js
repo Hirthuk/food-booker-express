@@ -7,6 +7,7 @@ import cors from 'cors';
 import UserRoute from './routes/UserRouter.js';
 import cookieParser from 'cookie-parser';
 import favouritesRouter from './routes/Favourites.js'
+import cartRouter from './routes/CartRoute.js'
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -37,6 +38,7 @@ connectCloudinary();
 app.use('/api/shops', ShopRoutes);
 app.use('/api/users', UserRoute);
 app.use('/api/favorites', favouritesRouter)
+app.use('/api/cart', cartRouter)
 
 app.get('/', (req, res) => {
     res.json({

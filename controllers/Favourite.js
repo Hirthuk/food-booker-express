@@ -4,32 +4,38 @@ import { sql } from '../config/connectDb.js'
 export const getFavorites = async (req, res) => {
     try {
         const userId = req.userId // From auth middleware
-        
+
+        // Debug log
+        console.log('Fetching favorites for user:', userId)
+
         const favorites = await sql`
             SELECT 
                 f.favorite_id,
                 f.added_at,
                 s.item_id,
-                s.name,
-                s.description,
-                s.price,
-                s.image_url,
-                s.category
+                s.item_name,
+                s.item_price as price,
+                s.item_url as image_url,
+                s.shop_id
             FROM user_favorites f
             JOIN shopitems s ON f.item_id = s.item_id
             WHERE f.user_id = ${userId}
             ORDER BY f.added_at DESC
         `
 
+        // Debug log
+        console.log('Found favorites:', favorites)
+
         return res.status(200).json({
             success: true,
             favorites
         })
     } catch (error) {
-        console.error('Get favorites error:', error)
+        console.error('Database error:', error)
         return res.status(500).json({
             success: false,
-            message: 'Error fetching favorites'
+            message: 'Failed to fetch favorites',
+            error: error.message
         })
     }
 }

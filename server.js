@@ -34,6 +34,32 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // 4. Cloudinary configuration
 connectCloudinary();
 
+// CORS configuration
+const corsOptions = {
+    origin: ['https://foodbooker.netlify.app', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Additional headers for CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://foodbooker.netlify.app');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    
+    // Handle OPTIONS method
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send();
+    }
+    next();
+});
+
 // 5. Routes (after all middleware)
 app.use('/api/shops', ShopRoutes);
 app.use('/api/users', UserRoute);

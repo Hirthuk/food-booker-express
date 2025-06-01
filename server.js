@@ -20,15 +20,10 @@ connectDb();
 
 // 3. Middleware setup (ORDER MATTERS!)
 app.use(cors({
-  origin: [
-    'https://foodbooker.netlify.app',
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: ['https://foodbooker.netlify.app', 'http://localhost:5173'],
   credentials: true,
-  optionsSuccessStatus: 200
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 // To parse cookies
 app.use(cookieParser())

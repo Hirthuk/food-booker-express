@@ -19,46 +19,60 @@ config();
 connectDb();
 
 // 3. Middleware setup (ORDER MATTERS!)
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-// SINGLE CORS middleware (no duplicates!)
-const allowedOrigins = ['https://foodbooker.netlify.app', 'http://localhost:5173'];
 app.use(cors({
-  origin: function(origin, callback) {
-    // allow requests with no origin (like mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: ['https://foodbooker.netlify.app', 'http://localhost:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// Preflight handler (for legacy clients)
-app.options('*', cors());
+// To parse cookies
+app.use(cookieParser())
+// These must come BEFORE route definitions
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // 4. Cloudinary configuration
 connectCloudinary();
 
+// CORS configuration
+const corsOptions = {
+    origin: ['https://foodbooker.netlify.app', 'http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Additional headers for CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://foodbooker.netlify.app');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    
+    // Handle OPTIONS method
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send();
+    }
+    next();
+});
+
 // 5. Routes (after all middleware)
 app.use('/api/shops', ShopRoutes);
 app.use('/api/users', UserRoute);
-app.use('/api/favorites', favouritesRouter);
-app.use('/api/cart', cartRouter);
+app.use('/api/favorites', favouritesRouter)
+app.use('/api/cart', cartRouter)
 
 app.get('/', (req, res) => {
-  res.json({
-    success: true,
-    message: "API working fine"
-  });
+    res.json({
+        success: true,
+        message: "API working fine"
+    });
 });
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port}`);
 });
